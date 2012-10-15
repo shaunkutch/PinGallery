@@ -1,0 +1,40 @@
+<resources>
+
+    <string name="app_name">TestProject</string>
+    <string name="title_section3">Section 3</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section1">Section 1</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="login_label">Login</string>
+    <string name="app_name">Authentication</string>
+	<string name="facebook">Facebook</string>
+	<string name="twitter">Twitter</string>
+	<string name="success">Success!</string>
+	<string name="login_label">Authenticate with</string>
+
+	<!-- Toast messages -->
+	<string name="parsing_exception">Invalid response format</string>
+	<string name="http_exception">Check your internet connection and try again
+	</string>
+	<string name="http_error">Server Problem, Try again</string>
+	
+	<string name="hello">Hello World, CreateChuteTutorialActivity!</string>
+    <string name="app_name">CreateChuteTutorial</string>
+    <string name="create_a_chute">Create a Chute</string>
+    <string name="basic_chute">Basic Chute</string>
+    <string name="chute_with_password">Chute with Password</string>
+    <string name="chute_with_different_permissions">Chute with Different Permissions</string>
+    <string name="chute_name">Chute Name: </string>
+    <string name="chute_created">Chute Created!</string>
+    <string name="chute_password">Chute Password: </string>
+    <string name="permission_to_add_photos">Permission to add photos: OK</string>
+    <string name="permission_to_add_members">Permission to add members: OK</string>
+    <string name="permission_to_wite_comments">Permission to add comments: OK</string>
+    <string name="parsing_exception">Invalid response format</string>
+    <string name="http_exception">Check your internet connection and try again
+	</string>
+    <string name="http_error">Server Problem, Try again</string>
+
+</resources>
