@@ -18,7 +18,7 @@ public abstract class BaseLoginActivity extends Activity {
 
 	private static final String CLIENT_SECRET = "fde7352cbcfa10dfc52e21c19fdeac6c5d6ad324421d8f915eb2016f9387f2f8";
 	private static final String CLIENT_ID = "50791358cc72f8496f000015";
-	private static final String CALLBACK_URL = "http://getchute.com/oauth/callback";
+	private static final String CALLBACK_URL = "http://www.plastku.com/oauth/callback";
 	private static final String PERMISSIONS_SCOPE = "all_resources manage_resources profile resources";
 
 	public static final String TAG = BaseLoginActivity.class.getSimpleName();

@@ -12,8 +12,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chute.android.photopickerplus.util.intent.PhotoPickerPlusIntentWrapper;
 import com.chute.sdk.api.GCHttpCallback;
+import com.chute.sdk.api.chute.ChutesAllGetRequest;
 import com.chute.sdk.api.chute.GCChutes;
+import com.chute.sdk.api.user.GCUser;
 import com.chute.sdk.model.GCAccountStore;
 import com.chute.sdk.model.GCChuteModel;
 import com.chute.sdk.model.GCHttpRequestParameters;
@@ -34,6 +37,8 @@ public class CreateGalleryFragment extends Fragment implements
 	private EditTextDialog mDialog;
 	private final GCChuteModel chute = new GCChuteModel();
 	private String galleryName;
+	private Button pickPhotoBtn;
+	private GCUser mGCUser;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,12 +47,10 @@ public class CreateGalleryFragment extends Fragment implements
 		setHasOptionsMenu(true);
 		View view = inflater.inflate(R.layout.create_gallery, container, false);
 		createGalleryBtn = (Button) view.findViewById(R.id.btnChuteBasic);
+		pickPhotoBtn = (Button) view.findViewById(R.id.pickPhotoBtn);
 
 		createGalleryBtn.setOnClickListener(new ChuteBasicClickListener());
-		// btnPasswordChute.setOnClickListener(new
-		// ChutePasswordClickListener());
-		// btnPermissionsChute.setOnClickListener(new
-		// ChutePermissionsClickListener());
+		pickPhotoBtn.setOnClickListener(new PickPhotoListener());
 		return view;
 	}
 
@@ -59,6 +62,8 @@ public class CreateGalleryFragment extends Fragment implements
 		// Test token, see GCAuthentication activity on how to authenticate
 		GCAccountStore account = GCAccountStore.getInstance(mActivity);
 		account.setPassword("4b8c64b3b1e6ba4bf4ad3ce4ec2c6bb3e4dc80d5942b705ef18d8915f7a37921");
+		
+		//GCUser.userChutes(mActivity, userId, new UserChuteCallback());
 
 		mDialog = new EditTextDialog(mActivity, Constants.DIALOG_EDITTEXT, this);
 		mDialog.TitleText = "Test";
@@ -69,14 +74,18 @@ public class CreateGalleryFragment extends Fragment implements
 
 		@Override
 		public void onClick(View v) {
-			/*
-			 * intent = new Intent(mActivity, GalleryActivity.class);
-			 * intent.putExtra(Constants.KEY_CHUTE_NAME,
-			 * Constants.BASIC_CHUTE_NAME);
-			 * intent.putExtra(Constants.KEY_CHUTE_FLAG, 0);
-			 * mActivity.startActivity(intent);
-			 */
 			mDialog.show();
+		}
+
+	}
+	
+	private final class PickPhotoListener implements OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			PhotoPickerPlusIntentWrapper wrapper = new PhotoPickerPlusIntentWrapper(mActivity);
+	        wrapper.setMultiPicker(false);
+	        wrapper.startActivityForResult(mActivity, PhotoPickerPlusIntentWrapper.REQUEST_CODE);
 		}
 
 	}
@@ -90,6 +99,35 @@ public class CreateGalleryFragment extends Fragment implements
 		chute.setPermissionView(2); // public chute
 		GCChutes.createChute(mActivity, chute, new CreateChuteCallback())
 				.executeAsync();
+	}
+	
+	private final class UserChuteCallback implements GCHttpCallback{
+
+		@Override
+		public void onSuccess(Object responseData) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onHttpException(GCHttpRequestParameters params,
+				Throwable exception) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onHttpError(int responseCode, String statusMessage) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onParserException(int responseCode, Throwable exception) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 
 	private final class CreateChuteCallback implements

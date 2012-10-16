@@ -23,7 +23,7 @@
 	<string name="hello">Hello World, CreateChuteTutorialActivity!</string>
     <string name="app_name">CreateChuteTutorial</string>
     <string name="create_a_chute">Create a Chute</string>
-    <string name="basic_chute">Basic Chute</string>
+    <string name="basic_chute">Create Gallery</string>
     <string name="chute_with_password">Chute with Password</string>
     <string name="chute_with_different_permissions">Chute with Different Permissions</string>
     <string name="chute_name">Chute Name: </string>
@@ -36,5 +36,6 @@
     <string name="http_exception">Check your internet connection and try again
 	</string>
     <string name="http_error">Server Problem, Try again</string>
+    <string name="pick_photo">Pick Photo</string>
 
 </resources>
