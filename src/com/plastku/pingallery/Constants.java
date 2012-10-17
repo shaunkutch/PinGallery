@@ -8,7 +8,8 @@ public class Constants {
 	public static final String PASSWORD_CHUTE_NAME = "Password Chute";
 	public static final String PERMISSIONS_CHUTE_NAME = "Permissions Chute";
 	public static final String PASSWORD = "Password";
-	public static final String CREEATE_GALLERY_TITLE = "Create Gallery";
+	public static final String CREATE_GALLERY_TITLE = "Create Gallery";
+	public static final String PICK_PHOTO = "Pick Photo";
 	
 	public static final int DIALOG_EDITTEXT = 0x0000;
 	
