@@ -1,37 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/relative"
-    android:background="@color/black"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/default_padding" >
+
+    <Button
+        android:id="@+id/pickPhotoBtn"
+        style="@style/btnStyle"
+        android:layout_gravity="center_horizontal"
+        android:drawableLeft="@drawable/ic_action_add"
+        android:text="@string/pick_photo" />
 
     <TextView
-        android:id="@+id/title"
-        android:layout_width="fill_parent"
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="10dp"
-        android:gravity="center_horizontal"
-        android:text="@string/create_a_chute"
-        android:textColor="@color/white"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:layout_marginTop="@dimen/default_top"
+        android:text="@string/pick_gallery_title"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"
-        android:orientation="vertical" >
-        
-        <Button
-            android:id="@+id/pickPhotoBtn"
-            style="@style/btnStyle"
-            android:text="@string/pick_photo" />
+    <Spinner
+        android:id="@+id/gallerySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_top"
+        android:padding="@dimen/default_padding" />
 
-        <Button
-            android:id="@+id/btnChuteBasic"
-            style="@style/btnStyle"
-            android:text="@string/basic_chute" />
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>
