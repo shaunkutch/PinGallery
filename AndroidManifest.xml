@@ -19,7 +19,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:name=".PinGalleryApp"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/Theme.plastku" >
         <activity
             android:name="AuthenticationActivity"
             android:label="@string/app_name" >
@@ -32,33 +32,27 @@
         <activity android:name=".MainActivity"></activity>
         <activity android:name=".GalleryActivity"></activity>
         <activity
-            android:name="com.chute.sdk.api.authentication.GCAuthenticationActivity"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+            android:name="com.chute.sdk.api.authentication.GCAuthenticationActivity" >
         </activity>
 		<activity
         android:name="com.chute.android.photopickerplus.app.ChooseServiceActivity"
-        android:screenOrientation="portrait"
-        android:theme="@android:style/Theme.Light.NoTitleBar" >
+        android:screenOrientation="portrait">
     </activity>
     <activity
         android:name="com.chute.android.photopickerplus.app.AlbumsActivity"
-        android:screenOrientation="portrait"
-        android:theme="@android:style/Theme.Light.NoTitleBar" >
+        android:screenOrientation="portrait" >
     </activity>
     <activity
         android:name="com.chute.android.photopickerplus.app.PhotoStreamActivity"
-        android:screenOrientation="portrait"
-        android:theme="@android:style/Theme.Light.NoTitleBar" >
+        android:screenOrientation="portrait">
     </activity>
     <activity
         android:name="com.chute.android.photopickerplus.app.PhotosActivity"
-        android:screenOrientation="portrait"
-        android:theme="@android:style/Theme.Light.NoTitleBar" >
+        android:screenOrientation="portrait">
     </activity>
     <activity
         android:name="com.chute.android.photopickerplus.app.GridActivity"
-        android:screenOrientation="portrait"
-        android:theme="@android:style/Theme.Light.NoTitleBar" >
+        android:screenOrientation="portrait">
     </activity>
         <service android:name="com.chute.sdk.api.GCHttpService" >
         </service>

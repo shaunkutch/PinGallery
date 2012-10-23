@@ -54,11 +54,11 @@ public class CreateGalleryFragment extends Fragment implements
 		mActivity = this.getActivity();
 		setHasOptionsMenu(true);
 		View view = inflater.inflate(R.layout.create_gallery, container, false);
-		mGallerySpinner = (Spinner) view.findViewById(R.id.gallerySpinner);
-		pickPhotoBtn = (Button) view.findViewById(R.id.pickPhotoBtn);
+		//mGallerySpinner = (Spinner) view.findViewById(R.id.gallerySpinner);
+		//pickPhotoBtn = (Button) view.findViewById(R.id.pickPhotoBtn);
 
 		//createGalleryBtn.setOnClickListener(new ChuteBasicClickListener());
-		pickPhotoBtn.setOnClickListener(new PickPhotoListener());
+		//pickPhotoBtn.setOnClickListener(new PickPhotoListener());
 		return view;
 	}
 
@@ -68,14 +68,14 @@ public class CreateGalleryFragment extends Fragment implements
 		super.onCreate(savedInstanceState);
 
 		// Test token, see GCAuthentication activity on how to authenticate
-		GCAccountStore account = GCAccountStore.getInstance(mActivity);
-		account.setPassword("4b8c64b3b1e6ba4bf4ad3ce4ec2c6bb3e4dc80d5942b705ef18d8915f7a37921");
+		//GCAccountStore account = GCAccountStore.getInstance(mActivity);
+		//account.setPassword("4b8c64b3b1e6ba4bf4ad3ce4ec2c6bb3e4dc80d5942b705ef18d8915f7a37921");
 		
-		GCUser.userChutes(mActivity, GCConstants.CURRENT_USER_ID, new UserChuteCallback(mActivity)).executeAsync();
+		//GCUser.userChutes(mActivity, GCConstants.CURRENT_USER_ID, new UserChuteCallback(mActivity)).executeAsync();
 		
-		mDialog = new EditTextDialog(mActivity, Constants.DIALOG_EDITTEXT, this);
-		mDialog.TitleText = "Test";
-		mDialog.DefaultText = "Enter Text here";
+		//mDialog = new EditTextDialog(mActivity, Constants.DIALOG_EDITTEXT, this);
+		//mDialog.TitleText = "Test";
+		//mDialog.DefaultText = "Enter Text here";
 	}
 
 	private final class ChuteBasicClickListener implements OnClickListener {
@@ -136,7 +136,7 @@ public class CreateGalleryFragment extends Fragment implements
         public View getView(int position, View view, ViewGroup parent) {
             TextView text = new TextView(mActivity);
             //text.setTextSize(20);
-            //text.setPadding(10, 20, 10, 20);
+            text.setPadding(10, 20, 10, 20);
             text.setText(mGalleryData.get(position).getName());
             return text;
         }
