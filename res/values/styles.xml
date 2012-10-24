@@ -18,18 +18,15 @@
 
 <resources>
 	
-    <style name="AppTheme" parent="Theme.plastku" />
-    <style name="Theme.plastku" parent="@android:style/Theme.Holo.Light">
-        <item name="android:actionBarItemBackground">@drawable/selectable_background_plastku</item>
-        <item name="android:actionBarStyle">@style/plastku_solid_ActionBar</item>       
+    <style name="AppTheme" parent="Theme.PinGallery" />
+    <style name="Theme.PinGallery" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/PinGalleryActionBar</item>
     </style>
-
-    <style name="plastku_solid_ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
-        <item name="android:background">@drawable/ab_solid_plastku</item>
-        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_plastku</item>
-        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_plastku</item>
-    </style>
- 
+    
+    <style name="PinGalleryActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+    <item name="android:background">@color/base_ui</item>
+</style>
+    
     <style name="buttonStyle" parent="android:Widget.Button">
 		<item name="android:layout_width">150dp</item>
 		<item name="android:layout_height">wrap_content</item>
