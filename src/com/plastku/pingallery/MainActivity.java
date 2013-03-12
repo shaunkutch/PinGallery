@@ -24,6 +24,7 @@ public class MainActivity extends RoboFragmentActivity {
         // set titles and fragments for view pager
         Map<String, Fragment> screens = new LinkedHashMap<String, Fragment>();
         screens.put("Login", new LoginFragment());
+        screens.put("Explore", new ExploreFragment());
         
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
