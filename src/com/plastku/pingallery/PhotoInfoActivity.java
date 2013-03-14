@@ -5,9 +5,6 @@ import java.util.Observer;
 
 import com.androidquery.AQuery;
 import com.google.inject.Inject;
-import com.plastku.pingallery.controllers.Controller;
-import com.plastku.pingallery.controllers.PhotoController;
-import com.plastku.pingallery.controllers.UserController;
 import com.plastku.pingallery.events.Event;
 import com.plastku.pingallery.events.EventListener;
 import com.plastku.pingallery.events.UserEvent;
@@ -29,7 +26,7 @@ import roboguice.inject.InjectView;
 @ContentView(R.layout.photo_info)
 public class PhotoInfoActivity extends RoboActivity {
 	
-	@Inject UserModel mUserModel;
+	/*@Inject UserModel mUserModel;
 	@Inject PhotoModel mPhotoModel;
 	@InjectView(R.id.imagePreview) ImageView mImagePreview;
 	@InjectView(R.id.userAvatar) ImageView mUserAvatar;
@@ -93,7 +90,7 @@ public class PhotoInfoActivity extends RoboActivity {
 		public void onEvent(Event event) {
 			updateUserAvatar();
 		}
-	};
+	};*/
 
 	
 }

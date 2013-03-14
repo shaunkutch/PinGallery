@@ -2,12 +2,22 @@ package com.plastku.pingallery;
 
 import java.io.ByteArrayOutputStream;
 
+import roboguice.activity.RoboActivity;
+import roboguice.activity.RoboFragmentActivity;
+
+import com.google.inject.Inject;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.plastku.pingallery.interfaces.ApiCallback;
+import com.plastku.pingallery.models.PhotoModel;
+import com.plastku.pingallery.util.FileUtils;
+import com.plastku.pingallery.views.AlertDialogFragment;
+import com.plastku.pingallery.vo.PhotoVO;
+import com.plastku.pingallery.vo.ResultVO;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -24,13 +34,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class UploadPhotoActivity extends Activity {
+public class UploadPhotoActivity extends RoboFragmentActivity {
 
 	private Button mPhotoButton;
 	private ProgressDialog mProgressDialog;
 	ImageView mPhotoPreview;
 	private Bitmap mBmp;
 	private EditText mPhotoMessage;
+	@Inject PhotoModel mPhotoModel;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,32 +94,26 @@ public class UploadPhotoActivity extends Activity {
 	private void savePhoto()
 	{
 		mProgressDialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
-		
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		mBmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-		byte[] byteArray = stream.toByteArray();
-		
-		ParseFile file = new ParseFile("photo.png", byteArray);
-		try {
-			file.save();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		ParseObject photo = new ParseObject("Photo");
-		photo.put("file", file);
-		ParseUser currentUser = ParseUser.getCurrentUser();
-		photo.setACL(new ParseACL(currentUser));
-		photo.put("user", currentUser);
-		photo.put("message", mPhotoMessage.getText().toString());
-		photo.saveInBackground(new SaveCallback(){
+		String path = FileUtils.storeBitmapInTempFolder(this, mBmp);
+		PhotoVO photo = new PhotoVO();
+		photo.message = mPhotoMessage.getText().toString();
+		photo.path = path;
+		mPhotoModel.savePhoto(photo, new ApiCallback(){
 
 			@Override
-			public void done(ParseException arg0) {
+			public void onSuccess(ResultVO result) {
 				mProgressDialog.dismiss();
-				Toast.makeText(getApplicationContext(), "PHOTO SAVED!", 
-						Toast.LENGTH_LONG).show();
+				AlertDialogFragment newFragment = new AlertDialogFragment();
+				newFragment.setMessage("File uploaded");
+				newFragment.show(getSupportFragmentManager(), "dialog");
+			}
+
+			@Override
+			public void onError(ResultVO result) {
+				mProgressDialog.dismiss();
+				AlertDialogFragment newFragment = new AlertDialogFragment();
+				newFragment.setMessage(result.message);
+				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		});
 	}

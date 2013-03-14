@@ -6,6 +6,7 @@ import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,8 +22,12 @@ import com.androidquery.AQuery;
 import com.google.inject.Inject;
 import com.plastku.pingallery.events.Event;
 import com.plastku.pingallery.events.EventListener;
+import com.plastku.pingallery.interfaces.ApiCallback;
+import com.plastku.pingallery.interfaces.GetPhotosCallback;
 import com.plastku.pingallery.models.PhotoModel;
+import com.plastku.pingallery.views.AlertDialogFragment;
 import com.plastku.pingallery.vo.PhotoVO;
+import com.plastku.pingallery.vo.ResultVO;
 
 public class ExploreFragment extends RoboFragment {
 
@@ -47,8 +52,28 @@ public class ExploreFragment extends RoboFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		mPhotoModel.addListener(PhotoModel.ChangeEvent.PHOTOS_CHANGED, photosChangedListener);
-		mPhotoModel.requestAllPhotos();
+		//mPhotoModel.addListener(PhotoModel.ChangeEvent.PHOTOS_CHANGED, photosChangedListener);
+		
+	}
+	
+	public void requestAllPhotos()
+	{
+		mPhotoModel.getAllPhotos(new ApiCallback() {
+
+			@Override
+			public void onSuccess(ResultVO result) {
+				PhotoModel.PhotoResultVO r = (PhotoModel.PhotoResultVO) result;
+				updateGrid(r.photos);
+			}
+
+			@Override
+			public void onError(ResultVO result) {
+				AlertDialogFragment newFragment = new AlertDialogFragment();
+				newFragment.setMessage(result.message);
+				newFragment.show(ExploreFragment.this.getFragmentManager(), "dialog");
+			}
+
+		});
 	}
 
 	@Override
@@ -61,7 +86,7 @@ public class ExploreFragment extends RoboFragment {
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.reload:
-				mPhotoModel.requestAllPhotos();
+				this.requestAllPhotos();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -69,10 +94,10 @@ public class ExploreFragment extends RoboFragment {
 	}
 
 	private void updateGrid(List<PhotoVO> entries) {
-		aa = new ArrayAdapter<PhotoVO>(getActivity(), R.layout.griditem,
+			aa = new ArrayAdapter<PhotoVO>(getActivity(), R.layout.griditem,
 				entries) {
 
-			public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(int position, View convertView, ViewGroup parent) {
 
 				if (convertView == null) {
 					convertView = aq.inflate(convertView, R.layout.griditem,
@@ -81,7 +106,7 @@ public class ExploreFragment extends RoboFragment {
 
 				PhotoVO photo = getItem(position);
 				AQuery aq = aq2.recycle(convertView);
-				String tbUrl = Constants.SITE_URL + photo.path + "/100/fit";
+				String tbUrl = photo.path;
 
 				if (aq.shouldDelay(position, convertView, parent, tbUrl)) {
 					aq.id(R.id.tb).clear();
@@ -103,16 +128,9 @@ public class ExploreFragment extends RoboFragment {
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
 			PhotoVO photo = ((PhotoVO) mGridView.getAdapter().getItem(position));
-			mPhotoModel.setCurrentPhoto(photo);
+			//mPhotoModel.setCurrentPhoto(photo);
 			Intent intent = new Intent(getActivity(), PhotoInfoActivity.class);
 			getActivity().startActivity(intent);
-		}
-	};
-
-	private EventListener photosChangedListener = new EventListener() {
-		@Override
-		public void onEvent(Event event) {
-			updateGrid(mPhotoModel.getPhotos());
 		}
 	};
 }
