@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/addPhoto"
-        android:icon="@drawable/ic_action_camera"
+        android:id="@+id/reload"
+        android:icon="@drawable/ic_action_reload"
         android:title="Add Photo"
         android:showAsAction="ifRoom|withText"
         android:titleCondensed="Add">

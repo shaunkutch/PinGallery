@@ -20,14 +20,21 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.PinGallery" >
         <activity
-            android:name=".MainActivity"
+            android:name="com.plastku.pingallery.IntroActivity"
             android:label="@string/app_name"
             android:configChanges="keyboardHidden|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity>\<activity
+            android:name="com.plastku.pingallery.MainActivity"></activity>
+        <activity
+            android:name="com.plastku.pingallery.LoginActivity"></activity>
+        <activity
+            android:name="com.plastku.pingallery.RegisterActivity"></activity>
+        <activity
+            android:name="com.plastku.pingallery.UploadPhotoActivity"></activity>
         <activity
             android:name="com.facebook.LoginActivity"></activity>
         <activity

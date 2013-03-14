@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/default_padding"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/upload_title"
+        style="@style/h1" />
+     
+     <EditText 
+        android:id="@+id/photoMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_top"
+        android:inputType="textMultiLine"
+        android:hint="@string/hint_message"/>
+     
+   <ImageView 
+       android:id="@+id/photoPreview"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_gravity="center_horizontal"
+       android:padding="10dp"
+       android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_top"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/photoButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_action_camera"
+            android:text="@string/photo" />
+
+        <View
+            android:layout_height="fill_parent"
+            android:layout_width="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <Button
+            android:id="@+id/galleryButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_action_picture"
+            android:text="@string/gallery" />
+    </LinearLayout>
+
+</LinearLayout>

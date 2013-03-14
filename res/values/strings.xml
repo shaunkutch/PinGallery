@@ -11,6 +11,34 @@
 	<string name="facebook">Facebook</string>
 	<string name="twitter">Twitter</string>
 	<string name="success">Success!</string>
+	<string name="login">Login</string>
+	<string name="register">Register</string>
+	<string name="ok">OK</string>
+	<string name="cancel">Cancel</string>
+	
+	<string name="upload_title">Upload a Photo</string>
+	<string name="upload_choose_photo">Choose a Photo</string>
+	<string name="hint_message">Add a message</string>
+	<string name="photo">Photo</string>
+	<string name="gallery">Gallery</string>
+	
+	<string name="hint_username">Username</string>
+	<string name="hint_email">Email</string>
+	<string name="hint_password">Password</string>
+	<string name="hint_password_confirm">Confirm Password</string>
+	<string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in"><b>Sign in</b></string>
+    <string name="action_sign_register"><b>Register</b></string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="menu_forgot_password">Recover lost password</string>
+    <string name="login_progress_signing_in">Signing in&#8230;</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_missmatch_password">Password must match</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="action_sign_in_facebook_register">Facebook</string>
 
 	<!-- Toast messages -->
 	<string name="parsing_exception">Invalid response format</string>
