@@ -11,7 +11,7 @@ import android.util.Log;
 public class PhotoVO
 {
 	public String path;
-	public String message;
+	public String description;
 	public String userId;
 	
 }

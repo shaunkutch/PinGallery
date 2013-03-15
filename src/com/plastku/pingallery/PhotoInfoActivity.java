@@ -26,12 +26,10 @@ import roboguice.inject.InjectView;
 @ContentView(R.layout.photo_info)
 public class PhotoInfoActivity extends RoboActivity {
 	
-	/*@Inject UserModel mUserModel;
+	@Inject UserModel mUserModel;
 	@Inject PhotoModel mPhotoModel;
 	@InjectView(R.id.imagePreview) ImageView mImagePreview;
 	@InjectView(R.id.userAvatar) ImageView mUserAvatar;
-	@Inject PhotoController mPhotoController;
-	@Inject UserController mUserContoller;
 	private PhotoVO mPhoto;
 	private AQuery aq;
 	private UserVO mUser;
@@ -45,27 +43,26 @@ public class PhotoInfoActivity extends RoboActivity {
         mPhotoModel.addListener(PhotoModel.ChangeEvent.PHOTO_CHANGED, photoChangedListener);
         mUserModel.addListener(UserModel.ChangeEvent.USER_ADDED, userChangedListener);
         updatePreviewPhoto();
-        int userId = mPhotoModel.getCurrentPhoto().user_id;
-        mUserContoller.dispatchEvent(new UserEvent(UserEvent.REQUEST_USER_BY_ID, userId));
+        String userId = mPhotoModel.getCurrentPhoto().userId;
 	}
 
 	public void onPhotoClicked(View view)
 	{
 		Intent intent = new Intent(this, PhotoViewActivity.class);
-		intent.putExtra("photo", mPhoto);
+		//intent.putExtra("photo", mPhoto);
     	this.startActivity(intent);
 	}
 	
 	private void updatePreviewPhoto()
 	{
 		mPhoto = mPhotoModel.getCurrentPhoto();
-		String photoUrl = Constants.SITE_URL+mPhoto.path+"/500/fit";      
+		String photoUrl = mPhoto.path;      
         aq.id(mImagePreview).image(photoUrl, true, true, 0, 0, null, AQuery.FADE_IN, AQuery.RATIO_PRESERVE); 
 	}
 	
 	private void updateUserAvatar()
 	{
-		mUser = mUserModel.getUserById(mPhoto.user_id);
+		mUser = mUserModel.getUserById(mPhoto.userId);
 		String avatarUrl = Constants.SITE_URL+mUser.avatar_path+"/100/fit";
 		aq.id(mUserAvatar).image(avatarUrl, true, true, 0, 0, null, AQuery.FADE_IN, AQuery.RATIO_PRESERVE);
 	}
@@ -90,7 +87,7 @@ public class PhotoInfoActivity extends RoboActivity {
 		public void onEvent(Event event) {
 			updateUserAvatar();
 		}
-	};*/
+	};
 
 	
 }

@@ -52,18 +52,18 @@ public class ExploreFragment extends RoboFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		//mPhotoModel.addListener(PhotoModel.ChangeEvent.PHOTOS_CHANGED, photosChangedListener);
-		
+		mPhotoModel.addListener(PhotoModel.ChangeEvent.PHOTOS_CHANGED, photosChangedListener);
+		requestAllPhotos();
 	}
 	
 	public void requestAllPhotos()
 	{
-		mPhotoModel.getAllPhotos(new ApiCallback() {
+		mPhotoModel.requestPhotos(0, 100, new ApiCallback() {
 
 			@Override
 			public void onSuccess(ResultVO result) {
 				PhotoModel.PhotoResultVO r = (PhotoModel.PhotoResultVO) result;
-				updateGrid(r.photos);
+				//updateGrid(r.photos);
 			}
 
 			@Override
@@ -128,9 +128,18 @@ public class ExploreFragment extends RoboFragment {
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
 			PhotoVO photo = ((PhotoVO) mGridView.getAdapter().getItem(position));
-			//mPhotoModel.setCurrentPhoto(photo);
+			mPhotoModel.setCurrentPhoto(photo);
 			Intent intent = new Intent(getActivity(), PhotoInfoActivity.class);
 			getActivity().startActivity(intent);
 		}
+	};
+	
+	EventListener photosChangedListener = new EventListener()
+	{
+		@Override
+		public void onEvent(Event event) {
+			updateGrid(mPhotoModel.getPhotos());
+		}
+		
 	};
 }

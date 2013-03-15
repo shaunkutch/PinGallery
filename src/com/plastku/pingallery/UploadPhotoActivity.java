@@ -96,9 +96,9 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 		mProgressDialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
 		String path = FileUtils.storeBitmapInTempFolder(this, mBmp);
 		PhotoVO photo = new PhotoVO();
-		photo.message = mPhotoMessage.getText().toString();
+		photo.description = mPhotoMessage.getText().toString();
 		photo.path = path;
-		mPhotoModel.savePhoto(photo, new ApiCallback(){
+		mPhotoModel.addPhoto(photo, new ApiCallback(){
 
 			@Override
 			public void onSuccess(ResultVO result) {

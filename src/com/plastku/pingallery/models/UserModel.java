@@ -39,7 +39,7 @@ public class UserModel extends Model {
 		mUsers = new HashMap();
 	}
 
-	public UserVO getUserById(int id) {
+	public UserVO getUserById(String id) {
 		return mUsers.get(id);
 	}
 
