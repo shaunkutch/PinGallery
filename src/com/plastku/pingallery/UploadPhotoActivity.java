@@ -1,29 +1,15 @@
 package com.plastku.pingallery;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 
-import roboguice.activity.RoboActivity;
 import roboguice.activity.RoboFragmentActivity;
-
-import com.google.inject.Inject;
-import com.parse.ParseACL;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
-import com.plastku.pingallery.interfaces.ApiCallback;
-import com.plastku.pingallery.models.PhotoModel;
-import com.plastku.pingallery.util.FileUtils;
-import com.plastku.pingallery.views.AlertDialogFragment;
-import com.plastku.pingallery.vo.PhotoVO;
-import com.plastku.pingallery.vo.ResultVO;
-
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +18,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
+
+import com.google.inject.Inject;
+import com.plastku.pingallery.interfaces.ApiCallback;
+import com.plastku.pingallery.models.PhotoModel;
+import com.plastku.pingallery.views.AlertDialogFragment;
+import com.plastku.pingallery.vo.PhotoVO;
+import com.plastku.pingallery.vo.ResultVO;
 
 public class UploadPhotoActivity extends RoboFragmentActivity {
 
@@ -41,7 +33,9 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 	ImageView mPhotoPreview;
 	private Bitmap mBmp;
 	private EditText mPhotoMessage;
-	@Inject PhotoModel mPhotoModel;
+	@Inject
+	PhotoModel mPhotoModel;
+	private Uri mImageUri;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,49 +50,53 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 
 			@Override
 			public void onClick(View arg0) {
-				Intent takePictureIntent = new Intent(
-						MediaStore.ACTION_IMAGE_CAPTURE);
-				startActivityForResult(takePictureIntent, Constants.PHOTO_CODE);
+				File file = new File(Constants.PHOTO_PATH);
+			    Uri outputFileUri = Uri.fromFile(file);
+				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+				startActivityForResult(intent, Constants.PHOTO_CODE);
 			}
 		});
 	}
-	
-	 @Override
-	    public boolean onCreateOptionsMenu(Menu menu) {
-	    	getMenuInflater().inflate(R.menu.upload_menu, menu);
-	        return true;
-	    }
-	    
-	    @Override
-	    public boolean onOptionsItemSelected(MenuItem item) {
-	    	 switch (item.getItemId()) {
-	         case R.id.uploadPhoto:
-	        	 	savePhoto();
-		        return true;
-	         default:
-	             return super.onOptionsItemSelected(item);
-	    	 }
-	    }
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.upload_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.uploadPhoto:
+			savePhoto();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent intent) {
 		if (resultCode == RESULT_OK) {
-			Bundle extras = intent.getExtras();
-			mBmp = (Bitmap) extras.get("data");
-			
+			BitmapFactory.Options options = new BitmapFactory.Options();
+		    options.inSampleSize = 4;
+		    	
+		    mBmp = BitmapFactory.decodeFile(Constants.PHOTO_PATH, options);
+
 			mPhotoPreview.setImageBitmap(mBmp);
 			mPhotoPreview.setVisibility(View.VISIBLE);
 		}
 	}
-	
-	private void savePhoto()
-	{
+
+	private void savePhoto() {
 		mProgressDialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
-		String path = FileUtils.storeBitmapInTempFolder(this, mBmp);
+		String path = Constants.PHOTO_PATH;
 		PhotoVO photo = new PhotoVO();
 		photo.message = mPhotoMessage.getText().toString();
 		photo.path = path;
-		mPhotoModel.savePhoto(photo, new ApiCallback(){
+		mPhotoModel.savePhoto(photo, new ApiCallback() {
 
 			@Override
 			public void onSuccess(ResultVO result) {
