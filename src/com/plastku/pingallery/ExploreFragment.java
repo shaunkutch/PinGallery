@@ -106,7 +106,7 @@ public class ExploreFragment extends RoboFragment {
 
 				PhotoVO photo = getItem(position);
 				AQuery aq = aq2.recycle(convertView);
-				String tbUrl = photo.path;
+				String tbUrl = photo.thumb;
 
 				if (aq.shouldDelay(position, convertView, parent, tbUrl)) {
 					aq.id(R.id.tb).clear();

@@ -14,14 +14,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.util.Log;
 
 public class FileUtils {
 	private static final String tag = "FileUtils";
 	private static final String tempPath = "pingallery";
-	private static final String tempVideoPath = tempPath + File.separator + "video";
-	private static final String tempVideoValidPath = tempVideoPath + File.separator + "valid";
-	private static final String tempVideoInValidPath = tempVideoPath + File.separator + "invalid";
 
 	public static void clearTempFiles(Context context){
 		// sort files
@@ -87,16 +86,6 @@ public class FileUtils {
 		return storeBitmap(bitmap, filePath);
 	}
 
-	public static String storeVideoFrame(Context context, Bitmap bitmap, String fileName, boolean isValid) {
-		
-		if (!fileName.endsWith(".jpeg") && !fileName.endsWith(".jpg")) {
-			fileName += ".jpg";
-		}
-		
-		String filePath = (isValid ? getRootDirForTempValidVideo(context) : getRootDirForTempInValidVideo(context)) + File.separator + fileName;
-		return storeBitmap(bitmap, filePath);
-	}
-
 	/**
 	 * @param context
 	 * @param bitmap
@@ -121,6 +110,56 @@ public class FileUtils {
 		Log.d(tag, "getBitmap:" + filePath);
 		Bitmap bitmap = decodeFile(new File(filePath), -1, -1);
 		return bitmap;
+	}
+	
+	public static Bitmap decodeFile(String path) {
+	    int orientation;
+	    try {
+	        if (path == null) {
+	            return null;
+	        }
+	        // decode image size
+	        BitmapFactory.Options o = new BitmapFactory.Options();
+	        o.inJustDecodeBounds = true;
+
+	        // decode with inSampleSize
+	        BitmapFactory.Options o2 = new BitmapFactory.Options();
+	        o2.inSampleSize = 4;
+	        Bitmap bm = BitmapFactory.decodeFile(path, o2);
+	        Bitmap bitmap = bm;
+
+	        ExifInterface exif = new ExifInterface(path);
+	        orientation = exif
+	                .getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+	        Log.e("orientation", "" + orientation);
+	        Matrix m = new Matrix();
+
+	        if ((orientation == 3)) {
+	            m.postRotate(180);
+	            m.postScale((float) bm.getWidth(), (float) bm.getHeight());
+	            // if(m.preRotate(90)){
+	            Log.e("in orientation", "" + orientation);
+	            bitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(),
+	                    bm.getHeight(), m, true);
+	            return bitmap;
+	        } else if (orientation == 6) {
+	            m.postRotate(90);
+	            Log.e("in orientation", "" + orientation);
+	            bitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(),
+	                    bm.getHeight(), m, true);
+	            return bitmap;
+	        }
+	        else if (orientation == 8) {
+	            m.postRotate(270);
+	            Log.e("in orientation", "" + orientation);
+	            bitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(),
+	                    bm.getHeight(), m, true);
+	            return bitmap;
+	        }
+	        return bitmap;
+	    } catch (Exception e) {
+	    }
+	    return null;
 	}
 
 	/**
@@ -197,8 +236,8 @@ public class FileUtils {
 	 * @param context
 	 * @return
 	 */
-	private static String getTempImageFileName(Context context) {
-		return getTempFilePath(context) + "temp.jpg";
+	public static String getTempImageFileName(Context context) {
+		return getTempFilePath(context) + "photo.jpg";
 	}
 
 	/**
@@ -208,24 +247,6 @@ public class FileUtils {
 	public static File getRootDirForTempImage(Context context) {
 
 		return getFolder(context, tempPath);
-	}
-
-	/**
-	 * @param context
-	 * @return
-	 */
-	public static File getRootDirForTempValidVideo(Context context) {
-
-		return getFolder(context, tempVideoValidPath);
-	}
-	
-	/**
-	 * @param context
-	 * @return
-	 */
-	public static File getRootDirForTempInValidVideo(Context context) {
-
-		return getFolder(context, tempVideoInValidPath);
 	}
 	
 	/**
@@ -252,7 +273,7 @@ public class FileUtils {
 	 * @param context
 	 * @return
 	 */
-	private static String getTempFilePath(Context context) {
+	public static String getTempFilePath(Context context) {
 		return getRootDirForTempImage(context) + File.separator;
 	}
 

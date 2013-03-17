@@ -56,7 +56,7 @@ public class PhotoInfoActivity extends RoboActivity {
 	private void updatePreviewPhoto()
 	{
 		mPhoto = mPhotoModel.getCurrentPhoto();
-		String photoUrl = mPhoto.path;      
+		String photoUrl = mPhoto.image;      
         aq.id(mImagePreview).image(photoUrl, true, true, 0, 0, null, AQuery.FADE_IN, AQuery.RATIO_PRESERVE); 
 	}
 	
