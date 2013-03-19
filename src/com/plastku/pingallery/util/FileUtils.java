@@ -11,11 +11,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
+import android.content.CursorLoader;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 
 public class FileUtils {
@@ -112,7 +116,7 @@ public class FileUtils {
 		return bitmap;
 	}
 	
-	public static Bitmap decodeFile(String path) {
+	public static Bitmap decodeFile(String path, int height, int width) {
 	    int orientation;
 	    try {
 	        if (path == null) {
@@ -121,10 +125,11 @@ public class FileUtils {
 	        // decode image size
 	        BitmapFactory.Options o = new BitmapFactory.Options();
 	        o.inJustDecodeBounds = true;
+	        BitmapFactory.decodeFile(path, o);
 
 	        // decode with inSampleSize
 	        BitmapFactory.Options o2 = new BitmapFactory.Options();
-	        o2.inSampleSize = 4;
+	        o2.inSampleSize = calculateInSampleSize(o, height, width);
 	        Bitmap bm = BitmapFactory.decodeFile(path, o2);
 	        Bitmap bitmap = bm;
 
@@ -400,6 +405,40 @@ public class FileUtils {
 			}
 		}
 		os = null;
+	}
+	
+	public static int calculateInSampleSize(BitmapFactory.Options options,
+			int reqWidth, int reqHeight) {
+		// Raw height and width of image
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
+
+		if (height > reqHeight || width > reqWidth) {
+
+			// Calculate ratios of height and width to requested height and
+			// width
+			final int heightRatio = Math.round((float) height
+					/ (float) reqHeight);
+			final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+			// Choose the smallest ratio as inSampleSize value, this will
+			// guarantee
+			// a final image with both dimensions larger than or equal to the
+			// requested height and width.
+			inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+		}
+
+		return inSampleSize;
+	}
+	
+	public static String getRealPathFromURI(Context context, Uri contentUri) {
+	    String[] proj = { MediaStore.Images.Media.DATA };
+	    CursorLoader loader = new CursorLoader(context, contentUri, proj, null, null, null);
+	    Cursor cursor = loader.loadInBackground();
+	    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+	    cursor.moveToFirst();
+	    return cursor.getString(column_index);
 	}
 
 }

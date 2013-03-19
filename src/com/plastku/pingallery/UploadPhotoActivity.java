@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import roboguice.activity.RoboFragmentActivity;
+import roboguice.inject.InjectView;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -33,17 +34,11 @@ import com.plastku.pingallery.vo.ResultVO;
 
 public class UploadPhotoActivity extends RoboFragmentActivity {
 
-	private Button mPhotoButton;
-	private Button mGalleryButton;
 	private ProgressDialog mProgressDialog;
-	ImageView mPhotoPreview;
 	private Bitmap mBmp;
-	private EditText mPhotoMessage;
-	@Inject
-	PhotoModel mPhotoModel;
-	private File mImageFile;
-	private Uri mImageUri;
-	private String mThumbPath;
+	@Inject PhotoModel mPhotoModel;
+	@InjectView(R.id.photoPreview) ImageView mPhotoPreview;
+	@InjectView(R.id.photoMessage) EditText mPhotoMessage;
 	private String mImagePath;
 
 	@Override
@@ -51,33 +46,16 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.upload_photo_activity);
 		
-		mPhotoPreview = (ImageView)findViewById(R.id.photoPreview);
-		mPhotoMessage = (EditText)findViewById(R.id.photoMessage);
+		Intent intent = getIntent();
+		mImagePath = intent.getStringExtra("imagePath");
 		
-		mGalleryButton = (Button) findViewById(R.id.galleryButton);
-		mGalleryButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-				photoPickerIntent.setType("image/*");
-				startActivityForResult(photoPickerIntent, Constants.GALLERY_CODE);
-			}
-		});
-
-		mPhotoButton = (Button) findViewById(R.id.photoButton);
-		mPhotoButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				mImageFile = new File(FileUtils.getTempImageFileName(UploadPhotoActivity.this));
-			    Uri outputFileUri = Uri.fromFile(mImageFile);
-				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-				startActivityForResult(intent, Constants.PHOTO_CODE);
-			}
-		});
+		mBmp = FileUtils.decodeFile(mImagePath, 500, 500);	
+		if(mBmp != null)
+		{
+			mPhotoPreview.setImageBitmap(mBmp);
+		}
 	}
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -96,52 +74,20 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 		}
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		if (resultCode == RESULT_OK) {
-			switch(requestCode)
-			{
-				case Constants.PHOTO_CODE:
-					mBmp = FileUtils.decodeFile(FileUtils.getTempImageFileName(UploadPhotoActivity.this));
-				break;
-				case Constants.GALLERY_CODE:
-					Uri chosenImageUri = intent.getData();
-					
-					try {
-						mBmp = Media.getBitmap(this.getContentResolver(),chosenImageUri);
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				break;
-			}
-			mImagePath = FileUtils.storeBitmapInTempFolder(UploadPhotoActivity.this, mBmp, "image");
-
-			mPhotoPreview.setImageBitmap(mBmp);
-			mPhotoPreview.setVisibility(View.VISIBLE);
-			
-			Bitmap thumb = ThumbnailUtils.extractThumbnail(mBmp, 100, 100);
-			mThumbPath = FileUtils.storeBitmapInTempFolder(UploadPhotoActivity.this, thumb, "thumb");
-		}
-	}
-
 	private void savePhoto() {
 		PhotoVO photo = new PhotoVO();
 		photo.description = mPhotoMessage.getText().toString();
 		photo.image = mImagePath;
-		photo.thumb = mThumbPath;
+		
+		Bitmap thumb = ThumbnailUtils.extractThumbnail(mBmp, 100, 100);
+		photo.thumb = FileUtils.storeBitmapInTempFolder(UploadPhotoActivity.this, thumb, "thumb");
 
 		mProgressDialog = ProgressDialog.show(this, "", "Uploading. Please wait...", true);
 		mPhotoModel.addPhoto(photo, new ApiCallback(){
 			@Override
 			public void onSuccess(ResultVO result) {
 				mProgressDialog.dismiss();
-				AlertDialogFragment newFragment = new AlertDialogFragment();
-				newFragment.setMessage("File uploaded");
-				newFragment.show(getSupportFragmentManager(), "dialog");
+				finish();
 			}
 
 			@Override
