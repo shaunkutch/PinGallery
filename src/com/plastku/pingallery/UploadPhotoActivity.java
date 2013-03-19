@@ -49,7 +49,8 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 		Intent intent = getIntent();
 		mImagePath = intent.getStringExtra("imagePath");
 		
-		mBmp = FileUtils.decodeFile(mImagePath, 500, 500);	
+		mBmp = FileUtils.decodeFile(mImagePath, 500, 500);
+		mImagePath = FileUtils.storeBitmapInTempFolder(UploadPhotoActivity.this, mBmp, "image");
 		if(mBmp != null)
 		{
 			mPhotoPreview.setImageBitmap(mBmp);
