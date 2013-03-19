@@ -42,7 +42,6 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 	@Inject
 	PhotoModel mPhotoModel;
 	private File mImageFile;
-	private Uri mImageUri;
 	private String mThumbPath;
 	private String mImagePath;
 
