@@ -18,6 +18,7 @@
 	<string name="photos_loaded">photos were loaded</string>
 	
 	<string name="upload_title">Upload a Photo</string>
+	<string name="upload">Upload</string>
 	<string name="upload_choose_photo">Choose a Photo</string>
 	<string name="hint_message">Add a message</string>
 	<string name="photo">Photo</string>

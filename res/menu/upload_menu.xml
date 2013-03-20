@@ -2,8 +2,7 @@
     <item
         android:id="@+id/uploadPhoto"
         android:icon="@drawable/ic_action_send"
-        android:title="Upload Photo"
-        android:showAsAction="ifRoom|withText"
-        android:titleCondensed="Add">
+        android:title="Upload"
+        android:showAsAction="always|withText">
     </item>
 </menu>
