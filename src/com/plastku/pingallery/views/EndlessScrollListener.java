@@ -37,7 +37,7 @@ public class EndlessScrollListener implements OnScrollListener {
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-
+    	System.out.println("On Refresh invoked..");
     }
 
     public void noMorePages() {

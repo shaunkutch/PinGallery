@@ -1,5 +1,7 @@
 package com.plastku.pingallery;
 
+import java.io.File;
+
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.InjectView;
 import android.app.ProgressDialog;
