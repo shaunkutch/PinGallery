@@ -24,6 +24,7 @@ import com.plastku.pingallery.events.EventListener;
 import com.plastku.pingallery.interfaces.ApiCallback;
 import com.plastku.pingallery.models.PhotoModel;
 import com.plastku.pingallery.views.AlertDialogFragment;
+import com.plastku.pingallery.views.EndlessScrollListener;
 import com.plastku.pingallery.vo.PhotoVO;
 import com.plastku.pingallery.vo.ResultVO;
 
@@ -34,8 +35,7 @@ public class ExploreFragment extends RoboFragment {
 	private ArrayAdapter<PhotoVO> aa;
 	@Inject
 	PhotoModel mPhotoModel;
-	@InjectView(R.id.grid)
-	GridView mGridView;
+	@InjectView(R.id.photoGrid) GridView mGridView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,13 +50,53 @@ public class ExploreFragment extends RoboFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
 		mPhotoModel.addListener(PhotoModel.ChangeEvent.PHOTOS_CHANGED, photosChangedListener);
-		requestAllPhotos();
+		queryPhotos();
+		
+		aa = new ArrayAdapter<PhotoVO>(getActivity(), R.layout.griditem,
+				mPhotoModel.getPhotos()) {
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+
+				if (convertView == null) {
+					convertView = aq.inflate(convertView, R.layout.griditem,
+							parent);
+				}
+
+				PhotoVO photo = getItem(position);
+				AQuery aq = aq2.recycle(convertView);
+				String tbUrl = photo.thumb;
+
+				if (aq.shouldDelay(position, convertView, parent, tbUrl)) {
+					aq.id(R.id.tb).clear();
+				} else {
+					aq.id(R.id.tb)
+							.progress(R.id.progress)
+							.image(tbUrl, true, true, 0, 0, null,
+									AQuery.FADE_IN, AQuery.RATIO_PRESERVE);
+				}
+
+				return convertView;
+			}
+		};
+		aq.id(mGridView).adapter(aa);
+		aq.id(mGridView).itemClicked(itemClickListener);
+		
+		EndlessScrollListener scrollListener = new EndlessScrollListener(mGridView, new EndlessScrollListener.RefreshList() {
+
+            @Override
+            public void onRefresh(int pageNumber) {
+                System.out.println("On Refresh invoked..");
+
+            }
+        });
+		mGridView.setOnScrollListener(scrollListener);
 	}
 	
-	public void requestAllPhotos()
+	public void queryPhotos()
 	{
-		mPhotoModel.requestPhotos(0, 100, new ApiCallback() {
+		mPhotoModel.requestPhotos(0, 24, new ApiCallback() {
 
 			@Override
 			public void onSuccess(ResultVO result) {
@@ -84,44 +124,13 @@ public class ExploreFragment extends RoboFragment {
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.reload:
-				this.requestAllPhotos();
+				this.queryPhotos();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
-	private void updateGrid(List<PhotoVO> entries) {
-			aa = new ArrayAdapter<PhotoVO>(getActivity(), R.layout.griditem,
-				entries) {
-
-		public View getView(int position, View convertView, ViewGroup parent) {
-
-				if (convertView == null) {
-					convertView = aq.inflate(convertView, R.layout.griditem,
-							parent);
-				}
-
-				PhotoVO photo = getItem(position);
-				AQuery aq = aq2.recycle(convertView);
-				String tbUrl = photo.thumb;
-
-				if (aq.shouldDelay(position, convertView, parent, tbUrl)) {
-					aq.id(R.id.tb).clear();
-				} else {
-					aq.id(R.id.tb)
-							.progress(R.id.progress)
-							.image(tbUrl, true, true, 0, 0, null,
-									AQuery.FADE_IN, AQuery.RATIO_PRESERVE);
-				}
-
-				return convertView;
-			}
-		};
-		aq.id(mGridView).adapter(aa);
-		aq.id(mGridView).itemClicked(itemClickListener);
-	}
-
+	
 	private OnItemClickListener itemClickListener = new OnItemClickListener() {
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
@@ -136,7 +145,7 @@ public class ExploreFragment extends RoboFragment {
 	{
 		@Override
 		public void onEvent(Event event) {
-			updateGrid(mPhotoModel.getPhotos());
+			aa.notifyDataSetChanged();
 		}
 		
 	};

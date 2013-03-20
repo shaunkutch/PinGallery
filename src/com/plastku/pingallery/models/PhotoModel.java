@@ -56,6 +56,12 @@ public class PhotoModel extends Model {
 		dispatchEvent(new PhotoModel.ChangeEvent(PhotoModel.ChangeEvent.PHOTOS_CHANGED));
 	}
 	
+	public void updatePhotos(List<PhotoVO> photos)
+	{
+		mPhotos.addAll(photos);
+		dispatchEvent(new PhotoModel.ChangeEvent(PhotoModel.ChangeEvent.PHOTOS_CHANGED));
+	}
+	
 	public void requestPhotos(int start, int limit, final ApiCallback callback)
 	{
 		ParseQuery query = new ParseQuery("Photo");
@@ -87,7 +93,7 @@ public class PhotoModel extends Model {
 		        			photos.add(photo);
 		        		}
 		        	}
-		        	setPhotos(photos);
+		        	updatePhotos(photos);
 		        	PhotoResultVO result = new PhotoResultVO();
 		        	result.message = String.valueOf(content.size()) + mContext.getString(R.string.photos_loaded);
 		        	result.photos = mPhotos;
