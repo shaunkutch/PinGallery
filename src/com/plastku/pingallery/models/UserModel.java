@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Observable;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
@@ -13,10 +14,20 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 import com.plastku.pingallery.Constants;
+import com.plastku.pingallery.LoginActivity;
+import com.plastku.pingallery.MainActivity;
+import com.plastku.pingallery.RegisterActivity;
 import com.plastku.pingallery.events.SimpleEvent;
+import com.plastku.pingallery.interfaces.ApiCallback;
 import com.plastku.pingallery.util.GsonTransformer;
+import com.plastku.pingallery.views.AlertDialogFragment;
 import com.plastku.pingallery.vo.PhotoVO;
+import com.plastku.pingallery.vo.ResultVO;
 import com.plastku.pingallery.vo.UserVO;
 
 @Singleton
@@ -49,16 +60,44 @@ public class UserModel extends Model {
 	}
 
 	public void requestUserById(int id) {
-		String url = Constants.SITE_URL + "api/users/user/id/" + id;
+		
+	}
+	
+	public void login(String username, String password, final ApiCallback callback)
+	{
+		final ResultVO result = new ResultVO();
+		ParseUser.logInInBackground(username, password, new LogInCallback() {
 
-		GsonTransformer t = new GsonTransformer();
-
-		aq.transformer(t).ajax(url, UserVO.class, new AjaxCallback<UserVO>() {
-
-			public void callback(String url, UserVO user, AjaxStatus status) {
-
-				addUser(user);
+			@Override
+			public void done(ParseUser user, ParseException e) {			
+				if (user != null) {
+					callback.onSuccess(result);
+				} else {
+					result.message = e.getMessage();
+					callback.onError(result);
+				}
 			}
+		});
+	}
+	
+	public void register(String username, String email, String password, final ApiCallback callback)
+	{
+		ParseUser user = new ParseUser();
+		user.setUsername(username);
+		user.setPassword(password);
+		user.setEmail(email);
+		
+		final ResultVO result = new ResultVO();
+		
+		user.signUpInBackground(new SignUpCallback() {
+		  public void done(ParseException e) {
+		    if (e == null) {
+		    	callback.onSuccess(result);
+		    } else {
+		    	result.message = e.getMessage();
+				callback.onError(result);
+		    }
+		  }
 		});
 	}
 }

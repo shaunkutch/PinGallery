@@ -13,6 +13,7 @@
 	<string name="success">Success!</string>
 	<string name="login">Login</string>
 	<string name="register">Register</string>
+	<string name="error_title">Oopsie!</string>
 	<string name="ok">OK</string>
 	<string name="cancel">Cancel</string>
 	<string name="photos_loaded">photos were loaded</string>

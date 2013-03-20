@@ -56,6 +56,8 @@ public class AlertDialogFragment extends DialogFragment {
 		if(mIcon != 0)
 		{
 			dialog.setIcon(mIcon);
+		}else{
+			dialog.setIcon(R.drawable.ic_action_warning);
 		}
 		if(mTitle != null)
 		{

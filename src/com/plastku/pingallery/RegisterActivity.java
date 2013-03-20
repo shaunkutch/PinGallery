@@ -1,9 +1,13 @@
 package com.plastku.pingallery;
 
+import com.google.inject.Inject;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+import com.plastku.pingallery.interfaces.ApiCallback;
+import com.plastku.pingallery.models.UserModel;
 import com.plastku.pingallery.views.AlertDialogFragment;
+import com.plastku.pingallery.vo.ResultVO;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -26,6 +30,7 @@ public class RegisterActivity extends FragmentActivity {
 	private ProgressDialog mProgressDialog;
 	private EditText mPasswordConfirmEditText;
 	private String mPasswordConfirm;
+	@Inject UserModel mUserModel;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -87,25 +92,23 @@ public class RegisterActivity extends FragmentActivity {
 		}
 		
 		mProgressDialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
-		
-		ParseUser user = new ParseUser();
-		user.setUsername(mUsername);
-		user.setPassword(mPassword);
-		user.setEmail(mEmail);
-		 
-		user.signUpInBackground(new SignUpCallback() {
-		  public void done(ParseException e) {
-			mProgressDialog.dismiss();
-		    if (e == null) {
-		    	Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+		mUserModel.register(mUsername, mEmail, mPassword, new ApiCallback(){
+
+			@Override
+			public void onSuccess(ResultVO result) {
+				mProgressDialog.dismiss();
+				Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
 				startActivity(intent);
 				finish();
-		    } else {
-		    	AlertDialogFragment newFragment = new AlertDialogFragment();
-				newFragment.setMessage(e.getMessage());
+			}
+
+			@Override
+			public void onError(ResultVO result) {
+				mProgressDialog.dismiss();
+				AlertDialogFragment newFragment = new AlertDialogFragment();
+				newFragment.setTitle(getString(R.string.error_title));
+				newFragment.setMessage(result.message);
 				newFragment.show(getSupportFragmentManager(), "dialog");
-		    }
-		  }
-		});
+			}});
 	}
 }
