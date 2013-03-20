@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 import com.plastku.pingallery.events.Event;
 import com.plastku.pingallery.events.EventListener;
 import com.plastku.pingallery.interfaces.ApiCallback;
-import com.plastku.pingallery.interfaces.GetPhotosCallback;
 import com.plastku.pingallery.models.PhotoModel;
 import com.plastku.pingallery.views.AlertDialogFragment;
 import com.plastku.pingallery.vo.PhotoVO;

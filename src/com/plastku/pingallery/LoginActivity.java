@@ -1,28 +1,29 @@
 package com.plastku.pingallery;
 
-import android.app.Activity;
+import roboguice.activity.RoboFragmentActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.parse.LogInCallback;
-import com.parse.ParseException;
-import com.parse.ParseUser;
+import com.google.inject.Inject;
+import com.plastku.pingallery.interfaces.ApiCallback;
+import com.plastku.pingallery.models.UserModel;
 import com.plastku.pingallery.views.AlertDialogFragment;
+import com.plastku.pingallery.vo.ResultVO;
 
-public class LoginActivity extends FragmentActivity {
+public class LoginActivity extends RoboFragmentActivity {
 	
 	private String mUsername;
 	private String mPassword;
 	private EditText mUsernameEditText;
 	private EditText mPasswordEditText;
 	private ProgressDialog mProgressDialog;
+	@Inject private UserModel mUserModel;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,22 +63,23 @@ public class LoginActivity extends FragmentActivity {
 		}
 		
 		mProgressDialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
-		
-		ParseUser.logInInBackground(mUsername, mPassword, new LogInCallback() {
+		mUserModel.login(mUsername, mPassword, new ApiCallback(){
 
 			@Override
-			public void done(ParseUser user, ParseException e) {
+			public void onSuccess(ResultVO result) {
 				mProgressDialog.dismiss();
-				if (user != null) {
-					Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-					startActivity(intent);
-					finish();
-				} else {
-					AlertDialogFragment newFragment = new AlertDialogFragment();
-					newFragment.setMessage(e.getMessage());
-					newFragment.show(getSupportFragmentManager(), "dialog");
-				}
+				Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+				startActivity(intent);
+				finish();
 			}
-		});
+
+			@Override
+			public void onError(ResultVO result) {
+				mProgressDialog.dismiss();
+				AlertDialogFragment newFragment = new AlertDialogFragment();
+				newFragment.setMessage(result.message);
+				newFragment.show(getSupportFragmentManager(), "dialog");
+			}});
+		
 	}
 }
