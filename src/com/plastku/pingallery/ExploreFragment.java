@@ -40,6 +40,7 @@ public class ExploreFragment extends RoboFragment implements OnScrollListener {
 	PhotoModel mPhotoModel;
 	@InjectView(R.id.photoGrid) GridView mGridView;
 	private int mThreshold = 20;
+	private int mPage;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,7 +48,6 @@ public class ExploreFragment extends RoboFragment implements OnScrollListener {
 		setHasOptionsMenu(true);
 		View view = inflater.inflate(R.layout.explore, container, false);
 		aq = new AQuery(getActivity(), view);
-		aq2 = new AQuery(getActivity());
 		return view;
 	}
 
@@ -57,21 +57,22 @@ public class ExploreFragment extends RoboFragment implements OnScrollListener {
 
 		aa = new ImageAdapter(getActivity(), mPhotoModel.getPhotos());
 		aq.id(mGridView).adapter(aa);
-		aq.id(mGridView).itemClicked(itemClickListener);
-		
-		mGridView.setOnScrollListener(this);
+		aq.id(mGridView).itemClicked(itemClickListener);		
+		aq.id(mGridView).scrolled(this);
 		mPhotoModel.addListener(PhotoModel.ChangeEvent.PHOTOS_CHANGED, photosChangedListener);
 		queryPhotos();
 	}
 	
 	public void queryPhotos()
 	{
-		mPhotoModel.requestPhotos(0, 24, new ApiCallback() {
+		int start = mThreshold*mPage;
+		
+		mPhotoModel.requestPhotos(start, mThreshold, new ApiCallback() {
 
 			@Override
 			public void onSuccess(ResultVO result) {
 				PhotoModel.PhotoResultVO r = (PhotoModel.PhotoResultVO) result;
-				//updateGrid(r.photos);
+				mPage++;
 			}
 
 			@Override
@@ -121,8 +122,7 @@ public class ExploreFragment extends RoboFragment implements OnScrollListener {
 	};
 	
 	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem,
-	        int visibleItemCount, int totalItemCount) {
+	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 		System.out.println("On Refresh invoked..");
 	}
 
@@ -130,10 +130,8 @@ public class ExploreFragment extends RoboFragment implements OnScrollListener {
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 	    if (scrollState == SCROLL_STATE_IDLE) {
 	        if (mGridView.getLastVisiblePosition() >= mGridView.getCount() - mThreshold) {
-	            //currentPage++;
-	            //load more list items:
-	            //loadElements(currentPage);
-	        	System.out.println("On Refresh invoked..");
+	        	System.out.println("Loading More..");
+	        	queryPhotos();
 	        }
 	    }
 	}
