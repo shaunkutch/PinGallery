@@ -59,8 +59,7 @@ public class ImageAdapter extends BaseAdapter {
 		if (aq.shouldDelay(position, convertView, parent, url)) {
 			aq.id(R.id.photoImage).clear();
 		} else {
-			//aq.id(R.id.photoImage).progress(R.id.progress).image(url, true, true, 0, 0, null, AQuery.FADE_IN, AQuery.RATIO_PRESERVE);
-			aq.id(R.id.photoImage).progress(R.id.progress).image(R.drawable.ic_action_picture);
+			aq.id(R.id.photoImage).progress(R.id.progress).image(url, true, true, 0, 0, null, 0, AQuery.RATIO_PRESERVE);
 		}
 
 		return convertView;

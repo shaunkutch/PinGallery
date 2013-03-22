@@ -1,7 +1,5 @@
 package com.plastku.pingallery;
 
-import java.util.List;
-
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 import android.content.Intent;
@@ -16,7 +14,6 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
 import com.androidquery.AQuery;
@@ -26,7 +23,6 @@ import com.plastku.pingallery.events.EventListener;
 import com.plastku.pingallery.interfaces.ApiCallback;
 import com.plastku.pingallery.models.PhotoModel;
 import com.plastku.pingallery.views.AlertDialogFragment;
-import com.plastku.pingallery.views.EndlessScrollListener;
 import com.plastku.pingallery.views.ImageAdapter;
 import com.plastku.pingallery.vo.PhotoVO;
 import com.plastku.pingallery.vo.ResultVO;
@@ -34,13 +30,14 @@ import com.plastku.pingallery.vo.ResultVO;
 public class ExploreFragment extends RoboFragment implements OnScrollListener {
 
 	private AQuery aq;
-	private AQuery aq2;
 	private ImageAdapter aa;
 	@Inject
 	PhotoModel mPhotoModel;
 	@InjectView(R.id.photoGrid) GridView mGridView;
 	private int mThreshold = 20;
 	private int mPage;
+	private int mPreviousTotal;
+	private boolean mIsLoading = false;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,29 +57,36 @@ public class ExploreFragment extends RoboFragment implements OnScrollListener {
 		aq.id(mGridView).itemClicked(itemClickListener);		
 		aq.id(mGridView).scrolled(this);
 		mPhotoModel.addListener(PhotoModel.ChangeEvent.PHOTOS_CHANGED, photosChangedListener);
-		queryPhotos();
+		this.queryPhotos();
 	}
 	
 	public void queryPhotos()
 	{
-		int start = mThreshold*mPage;
-		
-		mPhotoModel.requestPhotos(start, mThreshold, new ApiCallback() {
-
-			@Override
-			public void onSuccess(ResultVO result) {
-				PhotoModel.PhotoResultVO r = (PhotoModel.PhotoResultVO) result;
-				mPage++;
-			}
-
-			@Override
-			public void onError(ResultVO result) {
-				AlertDialogFragment newFragment = new AlertDialogFragment();
-				newFragment.setMessage(result.message);
-				newFragment.show(ExploreFragment.this.getFragmentManager(), "dialog");
-			}
-
-		});
+		if(!mIsLoading)
+		{
+			System.out.println("LOAD IMAGES");
+			int start = mThreshold*mPage;
+			mIsLoading = true;
+			mPhotoModel.requestPhotos(start, mThreshold, new ApiCallback() {
+	
+				@Override
+				public void onSuccess(ResultVO result) {	
+					PhotoModel.PhotoResultVO r = (PhotoModel.PhotoResultVO) result;
+					mPage++;
+					mIsLoading = false;
+				}
+	
+				@Override
+				public void onError(ResultVO result) {
+					AlertDialogFragment newFragment = new AlertDialogFragment();
+					newFragment.setMessage(result.message);
+					newFragment.show(ExploreFragment.this.getFragmentManager(), "dialog");
+				}
+	
+			});
+		}else{
+			System.out.println("Already Loading!");
+		}
 	}
 
 	@Override
@@ -123,16 +127,16 @@ public class ExploreFragment extends RoboFragment implements OnScrollListener {
 	
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-		System.out.println("On Refresh invoked..");
+		if(firstVisibleItem + visibleItemCount >= totalItemCount && totalItemCount > mPreviousTotal)
+		{
+			System.out.println("On Refresh invoked..");
+			mPreviousTotal = totalItemCount;
+			queryPhotos();
+		}
 	}
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
-	    if (scrollState == SCROLL_STATE_IDLE) {
-	        if (mGridView.getLastVisiblePosition() >= mGridView.getCount() - mThreshold) {
-	        	System.out.println("Loading More..");
-	        	queryPhotos();
-	        }
-	    }
+
 	}
 }
