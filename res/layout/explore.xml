@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <GridView
+    <com.plastku.pingallery.views.EndlessGridView
         android:id="@+id/photoGrid"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -14,8 +14,7 @@
         android:horizontalSpacing="0dp"
         android:verticalSpacing="0dp"
         android:gravity="center"
-        android:numColumns="auto_fit" >
-    </GridView>
+        android:numColumns="auto_fit" />
 
     <ProgressBar 
         android:id="@+id/progress"

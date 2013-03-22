@@ -1,5 +1,6 @@
 package com.plastku.pingallery.views;
 
+import roboguice.RoboGuice;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -31,9 +32,11 @@ public class EndlessGridView extends GridView implements OnScrollListener {
 	private int mPreviousTotal;
 	private boolean mIsLoading = false;
 	
+	@Inject
 	public EndlessGridView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mContext = (Activity)context;
+		RoboGuice.getInjector(mContext).injectMembersWithoutViews(this);
 		aq = new AQuery(context);
 		aa = new ImageAdapter(context, mPhotoModel.getPhotos());
 		aq.id(this).adapter(aa);
