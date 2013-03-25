@@ -23,7 +23,7 @@ public class PhotoViewActivity extends RoboActivity {
         
         Bundle extras = getIntent().getExtras();
         mPhoto = (PhotoVO) extras.get("photo");
-        String photoUrl = Constants.SITE_URL+mPhoto.image;
+        String photoUrl = mPhoto.image;
         aq.id(mImageViewer).webImage(photoUrl);
 	}
 }

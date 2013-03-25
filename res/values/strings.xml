@@ -17,6 +17,7 @@
 	<string name="ok">OK</string>
 	<string name="cancel">Cancel</string>
 	<string name="photos_loaded">photos were loaded</string>
+	<string name="network_error">Network can not be found.</string>
 	
 	<string name="upload_title">Upload a Photo</string>
 	<string name="upload">Upload</string>

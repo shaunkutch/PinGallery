@@ -15,23 +15,28 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.google.inject.Inject;
+import com.parse.ParseObject;
 import com.plastku.pingallery.interfaces.ApiCallback;
 import com.plastku.pingallery.models.PhotoModel;
+import com.plastku.pingallery.models.UserModel;
 import com.plastku.pingallery.util.FileUtils;
 import com.plastku.pingallery.views.AlertDialogFragment;
+import com.plastku.pingallery.vo.AddPhotoResultVO;
 import com.plastku.pingallery.vo.PhotoVO;
 import com.plastku.pingallery.vo.ResultVO;
 
 public class UploadPhotoActivity extends RoboFragmentActivity {
 
-	private ProgressDialog mProgressDialog;
-	private Bitmap mBmp;
+	protected ProgressDialog mProgressDialog;
+	protected Bitmap mBmp;
 	private File mImageFile;
 	private String mThumbPath;
 	@Inject PhotoModel mPhotoModel;
+	@Inject UserModel mUserModel;
 	@InjectView(R.id.photoPreview) ImageView mPhotoPreview;
 	@InjectView(R.id.photoMessage) EditText mPhotoMessage;
-	private String mImagePath;
+	protected String mImagePath;
+	private int mPhotoType;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,7 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 		
 		Intent intent = getIntent();
 		mImagePath = intent.getStringExtra("imagePath");
+		mPhotoType = intent.getIntExtra("photoType", PhotoModel.DEFAULT_PHOTO);
 		
 		mBmp = FileUtils.decodeFile(mImagePath, 500, 500);
 		mImagePath = FileUtils.storeBitmapInTempFolder(UploadPhotoActivity.this, mBmp, "image");
@@ -67,7 +73,7 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 		}
 	}
 
-	private void savePhoto() {
+	protected void savePhoto() {
 		PhotoVO photo = new PhotoVO();
 		photo.description = mPhotoMessage.getText().toString();
 		photo.image = mImagePath;
@@ -79,8 +85,14 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 		mPhotoModel.addPhoto(photo, new ApiCallback(){
 			@Override
 			public void onSuccess(ResultVO result) {
-				mProgressDialog.dismiss();
-				finish();
+				if(mPhotoType == PhotoModel.AVATAR_PHOTO)
+				{
+					AddPhotoResultVO photoResult = (AddPhotoResultVO)result;
+					setAvatar(photoResult.photoId);
+				}else{
+					mProgressDialog.dismiss();
+					finish();
+				}			
 			}
 
 			@Override
@@ -91,5 +103,23 @@ public class UploadPhotoActivity extends RoboFragmentActivity {
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		});
+	}
+	
+	protected void setAvatar(String photoId)
+	{
+		mUserModel.setAvatar(photoId, new ApiCallback(){
+
+			@Override
+			public void onSuccess(ResultVO result) {
+				mProgressDialog.dismiss();
+			}
+
+			@Override
+			public void onError(ResultVO result) {
+				mProgressDialog.dismiss();
+				AlertDialogFragment newFragment = new AlertDialogFragment();
+				newFragment.setMessage(result.message);
+				newFragment.show(getSupportFragmentManager(), "dialog");
+			}});
 	}
 }

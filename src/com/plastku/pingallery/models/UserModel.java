@@ -3,31 +3,24 @@ package com.plastku.pingallery.models;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 
 import android.content.Context;
-import android.content.Intent;
 
-import com.androidquery.callback.AjaxCallback;
-import com.androidquery.callback.AjaxStatus;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.parse.FindCallback;
 import com.parse.LogInCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
-import com.plastku.pingallery.Constants;
-import com.plastku.pingallery.LoginActivity;
-import com.plastku.pingallery.MainActivity;
-import com.plastku.pingallery.RegisterActivity;
 import com.plastku.pingallery.events.SimpleEvent;
 import com.plastku.pingallery.interfaces.ApiCallback;
-import com.plastku.pingallery.util.GsonTransformer;
-import com.plastku.pingallery.views.AlertDialogFragment;
-import com.plastku.pingallery.vo.PhotoVO;
 import com.plastku.pingallery.vo.ResultVO;
+import com.plastku.pingallery.vo.UserResultVO;
 import com.plastku.pingallery.vo.UserVO;
 
 @Singleton
@@ -50,17 +43,77 @@ public class UserModel extends Model {
 		mUsers = new HashMap();
 	}
 
-	public UserVO getUserById(String id) {
-		return mUsers.get(id);
-	}
-
-	public void addUser(UserVO user) {
-		mUsers.put(user.user_id, user);
-		this.dispatchEvent(new ChangeEvent(ChangeEvent.USER_ADDED));
-	}
-
-	public void requestUserById(int id) {
+	public void getUserById(String userId, final ApiCallback callback) {
 		
+		ParseQuery innerQuery = new ParseQuery("UserAvatar");
+		innerQuery.whereEqualTo("userId", userId);
+		
+		ParseQuery query = ParseUser.getQuery();
+		//query.whereEqualTo("objectId", userId);
+		query.whereDoesNotMatchQuery("objectId", innerQuery);
+		query.findInBackground(new FindCallback() {
+			public void done(List<ParseObject> objects, ParseException e) {
+				UserResultVO result = new UserResultVO();
+				if (e == null) {
+					for(ParseObject o : objects)
+		        	{
+						ParseUser pu = o.getParseUser("user");
+						UserVO user = new UserVO();
+						user.userName = pu.getUsername();
+						user.userId = pu.getObjectId();
+		        	}
+					callback.onSuccess(result);
+				} else {
+					result.message = e.getMessage();
+					callback.onError(result);
+				}
+			}
+		});
+	}
+	
+	public void getUserAvatar(String userId, final ApiCallback callback)
+	{
+		ParseQuery query = new ParseQuery("UserAvatar");
+		query.findInBackground(new FindCallback() {
+	        public void done(List<ParseObject> objects, ParseException e) {
+	        	if(e == null)
+	        	{
+	        		for(ParseObject o : objects)
+		        	{
+	        			ParseUser pu = o.getParseUser("user");
+		        	}
+	        	}else{
+	        		
+	        	}
+	        }
+		});
+	}
+	
+	public void setAvatar(String photoId, final ApiCallback callback)
+	{
+		ParseObject photo = new ParseObject("Photo");
+		photo.setObjectId(photoId);
+		
+		ParseObject avatarObject = new ParseObject("UserAvatar");
+		avatarObject.put("photo", photo);
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		avatarObject.setACL(new ParseACL(currentUser));
+		avatarObject.put("user", currentUser);
+		avatarObject.saveInBackground(new SaveCallback(){
+
+			@Override
+			public void done(ParseException e) {
+				ResultVO result = new ResultVO();
+				if(e == null)
+				{	
+					result.message = "File Uploaded";
+					callback.onSuccess(result);
+				}else{
+					result.message = e.getMessage();
+					callback.onError(result);
+				}
+			}
+		});
 	}
 	
 	public void login(String username, String password, final ApiCallback callback)

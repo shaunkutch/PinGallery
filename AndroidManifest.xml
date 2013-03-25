@@ -27,7 +27,8 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>\<activity
+        </activity>
+        <activity
             android:name="com.plastku.pingallery.MainActivity"></activity>
         <activity
             android:name="com.plastku.pingallery.LoginActivity"></activity>
@@ -39,6 +40,8 @@
             android:name="com.facebook.LoginActivity"></activity>
         <activity
             android:name="com.plastku.pingallery.PhotoInfoActivity"></activity>
+        <activity
+            android:name="com.plastku.pingallery.PhotoViewActivity"></activity>
     </application>
 
 </manifest>

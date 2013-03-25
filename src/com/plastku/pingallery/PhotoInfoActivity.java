@@ -8,9 +8,11 @@ import com.google.inject.Inject;
 import com.plastku.pingallery.events.Event;
 import com.plastku.pingallery.events.EventListener;
 import com.plastku.pingallery.events.UserEvent;
+import com.plastku.pingallery.interfaces.ApiCallback;
 import com.plastku.pingallery.models.PhotoModel;
 import com.plastku.pingallery.models.UserModel;
 import com.plastku.pingallery.vo.PhotoVO;
+import com.plastku.pingallery.vo.ResultVO;
 import com.plastku.pingallery.vo.UserVO;
 
 import android.content.Intent;
@@ -42,29 +44,41 @@ public class PhotoInfoActivity extends RoboActivity {
         aq.id(mImagePreview).clicked(this, "onPhotoClicked");
         mPhotoModel.addListener(PhotoModel.ChangeEvent.PHOTO_CHANGED, photoChangedListener);
         mUserModel.addListener(UserModel.ChangeEvent.USER_ADDED, userChangedListener);
+        mPhoto = mPhotoModel.getCurrentPhoto();
         updatePreviewPhoto();
-        String userId = mPhotoModel.getCurrentPhoto().userId;
+        updateUserAvatar();
 	}
 
 	public void onPhotoClicked(View view)
 	{
 		Intent intent = new Intent(this, PhotoViewActivity.class);
-		//intent.putExtra("photo", mPhoto);
+		intent.putExtra("photo", mPhoto);
     	this.startActivity(intent);
 	}
 	
 	private void updatePreviewPhoto()
 	{
-		mPhoto = mPhotoModel.getCurrentPhoto();
 		String photoUrl = mPhoto.image;      
         aq.id(mImagePreview).image(photoUrl, true, true, 0, 0, null, AQuery.FADE_IN, AQuery.RATIO_PRESERVE); 
 	}
 	
 	private void updateUserAvatar()
 	{
-		mUser = mUserModel.getUserById(mPhoto.userId);
-		String avatarUrl = Constants.SITE_URL+mUser.avatar_path+"/100/fit";
-		aq.id(mUserAvatar).image(avatarUrl, true, true, 0, 0, null, AQuery.FADE_IN, AQuery.RATIO_PRESERVE);
+		mUserModel.getUserById(mPhoto.userId, new ApiCallback(){
+
+			@Override
+			public void onSuccess(ResultVO result) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onError(ResultVO result) {
+				// TODO Auto-generated method stub
+				
+			}});
+		//String avatarUrl = Constants.SITE_URL+mUser.avatar_path+"/100/fit";
+		//aq.id(mUserAvatar).image(avatarUrl, true, true, 0, 0, null, AQuery.FADE_IN, AQuery.RATIO_PRESERVE);
 	}
 	
 	@Override

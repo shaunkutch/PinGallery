@@ -17,6 +17,7 @@ import com.plastku.pingallery.R;
 import com.plastku.pingallery.delegates.SavePhotoDelegate;
 import com.plastku.pingallery.events.SimpleEvent;
 import com.plastku.pingallery.interfaces.ApiCallback;
+import com.plastku.pingallery.vo.PhotoQueryResultVO;
 import com.plastku.pingallery.vo.PhotoVO;
 import com.plastku.pingallery.vo.ResultVO;
 
@@ -27,6 +28,9 @@ public class PhotoModel extends Model {
 	private PhotoVO mCurrentPhoto;
 	@Inject private SavePhotoDelegate mSavePhotoDelegate;
 	
+	public static final int AVATAR_PHOTO = 1;
+	public static final int DEFAULT_PHOTO = 0;
+	
 	public static class ChangeEvent extends SimpleEvent {
 		public static final String PHOTOS_CHANGED = "photosChanged";
 		public static final String PHOTO_CHANGED = "photoChanged";
@@ -34,11 +38,6 @@ public class PhotoModel extends Model {
 		public ChangeEvent(String type) {
 			super(type);
 		}
-	}
-	
-	public class PhotoResultVO extends ResultVO
-	{
-		public List<PhotoVO> photos;
 	}
 	
 	@Inject
@@ -73,11 +72,11 @@ public class PhotoModel extends Model {
 	public void queryPhotos(ParseQuery query, final ApiCallback callback)
 	{
 		query.findInBackground(new FindCallback() {
-	        public void done(List<ParseObject> content, ParseException e) {
+	        public void done(List<ParseObject> objects, ParseException e) {
 	        	if(e == null)
 	        	{
 	        		ArrayList<PhotoVO> photos = new ArrayList<PhotoVO>();
-		        	for(ParseObject o : content)
+		        	for(ParseObject o : objects)
 		        	{
 		        		PhotoVO photo = new PhotoVO();
 		        		photo.description = o.getString("description");
@@ -94,8 +93,8 @@ public class PhotoModel extends Model {
 		        		}
 		        	}
 		        	updatePhotos(photos);
-		        	PhotoResultVO result = new PhotoResultVO();
-		        	result.message = String.valueOf(content.size()) + mContext.getString(R.string.photos_loaded);
+		        	PhotoQueryResultVO result = new PhotoQueryResultVO();
+		        	result.message = String.valueOf(objects.size()) + mContext.getString(R.string.photos_loaded);
 		        	result.photos = mPhotos;
 		        	if(callback != null)
 		        	{

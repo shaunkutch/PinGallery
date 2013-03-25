@@ -18,6 +18,7 @@ import com.plastku.pingallery.events.Event;
 import com.plastku.pingallery.events.EventListener;
 import com.plastku.pingallery.interfaces.ApiCallback;
 import com.plastku.pingallery.models.PhotoModel;
+import com.plastku.pingallery.vo.PhotoQueryResultVO;
 import com.plastku.pingallery.vo.PhotoVO;
 import com.plastku.pingallery.vo.ResultVO;
 
@@ -57,7 +58,7 @@ public class EndlessGridView extends GridView implements OnScrollListener {
 	
 				@Override
 				public void onSuccess(ResultVO result) {	
-					PhotoModel.PhotoResultVO r = (PhotoModel.PhotoResultVO) result;
+					PhotoQueryResultVO r = (PhotoQueryResultVO) result;
 					mPage++;
 					mIsLoading = false;
 				}
@@ -96,7 +97,7 @@ public class EndlessGridView extends GridView implements OnScrollListener {
 	
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-		if(firstVisibleItem + visibleItemCount >= totalItemCount && totalItemCount > mPreviousTotal)
+		if(firstVisibleItem + visibleItemCount >= totalItemCount - mThreshold && totalItemCount > mPreviousTotal)
 		{
 			System.out.println("On Refresh invoked..");
 			mPreviousTotal = totalItemCount;

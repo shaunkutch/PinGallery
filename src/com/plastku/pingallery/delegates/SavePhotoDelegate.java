@@ -11,6 +11,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.plastku.pingallery.interfaces.ApiCallback;
 import com.plastku.pingallery.util.FileUtils;
+import com.plastku.pingallery.vo.AddPhotoResultVO;
 import com.plastku.pingallery.vo.PhotoVO;
 import com.plastku.pingallery.vo.ResultVO;
 
@@ -76,7 +77,7 @@ public class SavePhotoDelegate {
 	
 	private void savePhoto()
 	{
-		ParseObject photoObject = new ParseObject("Photo");
+		final ParseObject photoObject = new ParseObject("Photo");
 		photoObject.put("image", mImageFile);
 		photoObject.put("thumb", mThumbFile);
 		ParseUser currentUser = ParseUser.getCurrentUser();
@@ -87,10 +88,11 @@ public class SavePhotoDelegate {
 
 			@Override
 			public void done(ParseException e) {
-				ResultVO result = new ResultVO();
+				AddPhotoResultVO result = new AddPhotoResultVO();
 				if(e == null)
 				{	
 					result.message = "File Uploaded";
+					result.photoId = photoObject.getObjectId();
 					mCallback.onSuccess(result);
 				}else{
 					result.message = e.getMessage();

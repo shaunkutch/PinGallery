@@ -8,17 +8,23 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.google.inject.Inject;
 import com.parse.Parse;
 import com.parse.ParseFile;
+import com.plastku.pingallery.models.PhotoModel;
 import com.plastku.pingallery.util.FileUtils;
+import com.plastku.pingallery.util.NetworkUtils;
+import com.plastku.pingallery.views.PhotoSourceAlertDialog;
 
 import roboguice.activity.RoboFragmentActivity;
+import roboguice.inject.InjectView;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -37,6 +43,11 @@ public class MainActivity extends RoboFragmentActivity {
 	public static final String TAG = MainActivity.class.getSimpleName();
     ViewPager mViewPager;
 	private MainFragmentPagerAdapter mFragmentPagerAdapter;
+	@Inject private NetworkUtils mNetworkUtils;
+	@Inject PhotoSourceAlertDialog mPhotoSourceAlert;
+	@InjectView(R.id.networkError) View mNetworkErrorView;
+	@InjectView(R.id.pager) View mPagerView;
+	public int photoType = PhotoModel.DEFAULT_PHOTO;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,12 +60,40 @@ public class MainActivity extends RoboFragmentActivity {
         Map<String, Fragment> screens = new LinkedHashMap<String, Fragment>();
         screens.put("Search", new SearchFragment());
         screens.put("Explore", new ExploreFragment());
+        screens.put("Profile", new ProfileFragment());
         
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mFragmentPagerAdapter = new MainFragmentPagerAdapter(screens, getSupportFragmentManager());  
         mViewPager.setAdapter(mFragmentPagerAdapter);
-
+        this.setState();
+        
+        mNetworkUtils.setNetworkCallback(new NetworkUtils.NetworkCallback() {
+			
+			@Override
+			public void onConnectionChange(NetworkInfo networkInfo) {
+				setState();
+			}
+		});
+    }
+    
+    @Override
+    public void onDestroy()
+    {
+    	super.onDestroy();
+    	mNetworkUtils.onDestroy();
+    }
+    
+    private void setState()
+    {
+    	if(mNetworkUtils.isNetworkAvailable())
+        {
+    		mPagerView.setVisibility(View.VISIBLE);
+    		mNetworkErrorView.setVisibility(View.GONE);
+        }else{
+        	mPagerView.setVisibility(View.GONE);
+    		mNetworkErrorView.setVisibility(View.VISIBLE);
+        }
     }
     
     @Override
@@ -67,8 +106,8 @@ public class MainActivity extends RoboFragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
     	 switch (item.getItemId()) {
          case R.id.addPhoto:
-        	PhotoSourceAlertDialog dialog = new PhotoSourceAlertDialog(this);
-        	dialog.show();
+        	this.photoType = PhotoModel.DEFAULT_PHOTO;
+     		mPhotoSourceAlert.show();
 	        return true;
          default:
              return super.onOptionsItemSelected(item);
@@ -91,49 +130,8 @@ public class MainActivity extends RoboFragmentActivity {
 			
 			Intent i=new Intent(this, UploadPhotoActivity.class);
 			i.putExtra("imagePath", imagePath);
+			i.putExtra("photoType", photoType);
 			this.startActivity(i);
 		}
 	}
-   
-    private static class PhotoSourceAlertDialog extends AlertDialog {
-
-    	private Context mContext;
-    	
-        protected PhotoSourceAlertDialog(final Context context) {
-            super(context);
-            this.mContext = context;
-            
-            setTitle(mContext.getString(R.string.upload));
-            View view = ((Activity) mContext).getLayoutInflater().inflate(R.layout.photo_source_view,null);
-            setView(view);
-            Button photoButton = (Button) view.findViewById(R.id.photoButton);
-			photoButton.setOnClickListener(new View.OnClickListener(){
-
-				@Override
-				public void onClick(View v) {
-					File imageFile = new File(FileUtils.getTempImageFileName(mContext));
-				    Uri outputFileUri = Uri.fromFile(imageFile);
-					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-					intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-					((Activity) mContext).startActivityForResult(intent, Constants.PHOTO_CODE);
-					dismiss();
-				}
-				
-			});
-			
-			Button galleryButton = (Button) view.findViewById(R.id.galleryButton);
-			galleryButton.setOnClickListener(new View.OnClickListener(){
-
-				@Override
-				public void onClick(View v) {
-					Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-					photoPickerIntent.setType("image/*");
-					((Activity) mContext).startActivityForResult(photoPickerIntent, Constants.GALLERY_CODE);
-					dismiss();
-				}
-				
-			});
-        }
-
-    }
 }

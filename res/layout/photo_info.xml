@@ -9,7 +9,6 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/ic_action_picture" />
-
     <ImageView
         android:id="@+id/imagePreview"
         android:layout_width="match_parent"
